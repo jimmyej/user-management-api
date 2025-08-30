@@ -1,0 +1,162 @@
+{
+	"info": {
+		"_postman_id": "758e02f8-7984-459b-b4c2-114f52fd448d",
+		"name": "User management API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "166433",
+		"_collection_link": "https://agro-app-539580.postman.co/workspace/agro-workspace~ccd5c48e-f683-4440-a982-d0aa7bc050a1/collection/166433-758e02f8-7984-459b-b4c2-114f52fd448d?action=share&source=collection_link&creator=166433"
+	},
+	"item": [
+		{
+			"name": "4. get all users",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "5. get user by email",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/users/jimmy.sanchez@gmail.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"jimmy.sanchez@gmail.com"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "1. register user - bad format",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"Jimmy Sanchez\",\n    \"email\":\"!234@ee@gmail.com\",\n    \"password\":\"123\",\n    \"phones\":[\n        {\n            \"number\":\"999999999\",\n            \"cityCode\":\"1\",\n            \"countryCode\":\"51\"\n        }, {\n            \"number\":\"988888888\",\n            \"cityCode\":\"1\",\n            \"countryCode\":\"51\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/users/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "2. register user - ok",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"Jimmy Sanchez\",\n    \"email\":\"jimmy.sanchez@gmail.com\",\n    \"password\":\"JS53$abc!KJ\",\n    \"phones\":[\n        {\n            \"number\":\"999999999\",\n            \"cityCode\":\"1\",\n            \"countryCode\":\"51\"\n        }, {\n            \"number\":\"988888888\",\n            \"cityCode\":\"1\",\n            \"countryCode\":\"51\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/users/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "3. register user - exists email",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\":\"Jimmy Sanchez\",\n    \"email\":\"jimmy.sanchez@gmail.com\",\n    \"password\":\"JS53$abc!KJ\",\n    \"phones\":[\n        {\n            \"number\":\"999999999\",\n            \"cityCode\":\"1\",\n            \"countryCode\":\"51\"\n        }, {\n            \"number\":\"988888888\",\n            \"cityCode\":\"1\",\n            \"countryCode\":\"51\"\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/users/signup",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"users",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
