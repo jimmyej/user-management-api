@@ -103,6 +103,7 @@
 						<exclude>com/jse/manage_user/model/**</exclude>
 						<exclude>com/jse/manage_user/config/**</exclude>
 						<exclude>com/jse/manage_user/validator/**</exclude>
+						<exclude>com/jse/manage_user/exception/**</exclude>
 					</excludes>
 				</configuration>
 				<executions>

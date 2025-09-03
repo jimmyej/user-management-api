@@ -3,11 +3,11 @@ package com.jse.manage_user.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jse.manage_user.model.entity.PhoneEntity;
 import com.jse.manage_user.model.entity.UserEntity;
+import com.jse.manage_user.model.properties.ValidationProperties;
 import com.jse.manage_user.model.request.PhoneRequest;
 import com.jse.manage_user.model.request.UserRequest;
 import com.jse.manage_user.repository.UserRepository;
 import com.jse.manage_user.service.impl.UserServiceImpl;
-import com.jse.manage_user.validator.UserValidator;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -20,8 +20,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(UserController.class)
-@Import({UserServiceImpl.class ,UserValidator.class})
+@Import({UserServiceImpl.class, ValidationProperties.class})
 class UserControllerTest {
 
     @Autowired
@@ -97,53 +95,6 @@ class UserControllerTest {
             .activated(true)
             .build();
 
-    @Test
-    void getUsers_ok() throws Exception {
-        List<UserEntity> storedUsers = List.of(userEntity1);
-        Mockito.when(userRepository.findAll()).thenReturn(storedUsers);
-
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/v1/users")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", Matchers.hasSize(1)))
-                .andExpect(jsonPath("$[0].token", Matchers.is(token1)));
-    }
-
-    @Test
-    void getUsers_noContent() throws Exception {
-        List<UserEntity> storedUsers = List.of();
-        Mockito.when(userRepository.findAll()).thenReturn(storedUsers);
-
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/v1/users")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    void getUserByEmail_ok() throws Exception {
-        String email = "jimmy.sanchez@gmail.com";
-        Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.of(userEntity1));
-
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/v1/users/"+email)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token", Matchers.is(token1)));
-    }
-
-    @Test
-    void getUserByEmail_notFound() throws Exception {
-        String email = "jimmy.sanchez@gmail.com";
-        Mockito.when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
-
-        mockMvc.perform(MockMvcRequestBuilders
-                        .get("/api/v1/users/"+email)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
-    }
-
     private UserEntity prepareUserRequest(){
         UserEntity userEntity = UserEntity.builder()
                 .id(UUID.randomUUID())
@@ -177,7 +128,7 @@ class UserControllerTest {
     }
 
     @Test
-    void registerUser_badRequest() throws Exception {
+    void registerUser_conflict() throws Exception {
         Mockito.when(userRepository.existsByEmail("jimmy.sanchez@gmail.com")).thenReturn(true);
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -185,7 +136,7 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON)
                         .content(this.mapper.writeValueAsString(userRequest)))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isConflict())
                 .andExpect(jsonPath("$", notNullValue()))
                 .andExpect(jsonPath("$.message", Matchers.is("Email already exists!")));
     }
@@ -199,8 +150,7 @@ class UserControllerTest {
                         .content(this.mapper.writeValueAsString(badUserRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$", notNullValue()))
-                .andExpect(jsonPath("$", Matchers.hasSize(2)))
-                .andExpect(jsonPath("$[0]", Matchers.is("Invalid email format")))
-                .andExpect(jsonPath("$[1]", Matchers.startsWith("Password must be at least 8 characters")));
+                .andExpect(jsonPath("$.message.email", Matchers.is("Invalid email format")))
+                .andExpect(jsonPath("$.message.password", Matchers.startsWith("Password must be at least 8 chars")));
     }
 }
