@@ -1,6 +1,8 @@
 # User Management API
 This API has been built to manage the users with the following specifications:
 
+![img.png](img.png)
+
 ### Tools
 - Java 17
 - Spring boot 3.5.5

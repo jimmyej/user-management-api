@@ -1,5 +1,6 @@
 package com.jse.manage_user.service.impl;
 
+import com.jse.manage_user.exception.ResourceAlreadyExistsException;
 import com.jse.manage_user.model.entity.PhoneEntity;
 import com.jse.manage_user.model.entity.UserEntity;
 import com.jse.manage_user.model.request.UserRequest;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -25,48 +25,18 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    @Override
-    public Set<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream().map(userEntity ->
-                        UserResponse
-                                .builder()
-                                .id(userEntity.getId())
-                                .created(userEntity.getCreated())
-                                .modified(userEntity.getModified())
-                                .lastLogin(userEntity.getLastLogin())
-                                .token(userEntity.getToken())
-                                .activated(userEntity.isActivated())
-                                .build())
-                .collect(Collectors.toSet());
-    }
-
-    @Override
-    public UserResponse getUserByEmail(String email) {
-        Optional<UserEntity> user = userRepository.findByEmail(email);
-        return user.map(userEntity -> UserResponse
-                .builder()
-                .id(userEntity.getId())
-                .created(userEntity.getCreated())
-                .modified(userEntity.getModified())
-                .lastLogin(userEntity.getLastLogin())
-                .token(userEntity.getToken())
-                .activated(userEntity.isActivated())
-                .build()).orElse(null);
-    }
-
-    @Override
-    public boolean existsEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
-
     public UserResponse createUser(UserRequest request) {
+
+        if(userRepository.existsByEmail(request.getEmail())){
+            throw new ResourceAlreadyExistsException("Email already exists!");
+        }
 
         UserEntity userEntity = UserEntity.builder()
                 .name(request.getName())
                 .email(request.getEmail())
                 .password(request.getPassword())
                 .lastLogin(LocalDateTime.now())
-                .token(UUID.randomUUID().toString())//TODO replace per JWT
+                .token(UUID.randomUUID().toString())
                 .build();
 
         Set<PhoneEntity> phones = request.getPhones().stream().map(phoneRequest ->
@@ -91,15 +61,5 @@ public class UserServiceImpl implements UserService {
                 .token(userEntityResponse.getToken())
                 .activated(userEntityResponse.isActivated())
                 .build();
-    }
-
-    @Override
-    public UserResponse updateUser(String email, UserRequest request) {
-        return null;
-    }
-
-    @Override
-    public boolean deactivateUser(String email) {
-        return false;
     }
 }
