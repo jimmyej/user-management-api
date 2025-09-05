@@ -9,31 +9,32 @@ import org.springframework.beans.factory.annotation.Autowired;
 @SuppressWarnings("unused")
 public class CompositeUserValidator implements ConstraintValidator<ValidUserRequest, UserRequest> {
 
+    private final ValidationProperties properties;
+
     @Autowired
-    private ValidationProperties properties;
+    CompositeUserValidator(ValidationProperties properties){
+        this.properties = properties;
+    }
 
 
     public boolean isValid(UserRequest request, ConstraintValidatorContext context) {
         if (request == null) {
-            return true; // let @NotNull handle null objects
+            return true;
         }
 
         boolean valid = true;
 
-        // disable default error
         context.disableDefaultConstraintViolation();
 
-        // Validate email
         if (request.getEmail() == null || !request.getEmail().matches(properties.getEmailRegex()) || !request.getEmail().contains(".")) {
             context.buildConstraintViolationWithTemplate("Invalid email format")
-                    .addPropertyNode("email") // bind error to field
+                    .addPropertyNode("email")
                     .addConstraintViolation();
             valid = false;
         }
 
         String password = request.getPassword();
 
-        // Password validation using property regex + length
         if (password == null ||
                 password.length() < properties.getPassword().getMinLength() ||
                 !password.matches(properties.getPassword().getLowercase()) ||

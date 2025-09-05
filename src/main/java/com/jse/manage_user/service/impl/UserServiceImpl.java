@@ -1,6 +1,7 @@
 package com.jse.manage_user.service.impl;
 
 import com.jse.manage_user.exception.ResourceAlreadyExistsException;
+import com.jse.manage_user.exception.ResourceBadRequestException;
 import com.jse.manage_user.model.entity.PhoneEntity;
 import com.jse.manage_user.model.entity.UserEntity;
 import com.jse.manage_user.model.request.UserRequest;
@@ -26,6 +27,10 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserResponse createUser(UserRequest request) {
+
+        if(request == null){
+            throw new ResourceBadRequestException("Request body is empty!");
+        }
 
         if(userRepository.existsByEmail(request.getEmail())){
             throw new ResourceAlreadyExistsException("Email already exists!");

@@ -36,7 +36,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", content = { @Content(schema = @Schema()) })
     })
     @PostMapping("/signup")
-    ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserRequest request){
+    ResponseEntity<UserResponse> registerUser(@Valid @RequestBody(required = false) UserRequest request){
         return new ResponseEntity<>(userService.createUser(request), HttpStatus.CREATED);
     }
 }
