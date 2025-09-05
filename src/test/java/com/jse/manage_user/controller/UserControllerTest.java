@@ -153,4 +153,16 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.message.email", Matchers.is("Invalid email format")))
                 .andExpect(jsonPath("$.message.password", Matchers.startsWith("Password must be at least 8 chars")));
     }
+
+    @Test
+    void registerUser_badRequest() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/v1/users/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .content(this.mapper.writeValueAsString(null)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$", notNullValue()))
+                .andExpect(jsonPath("$.message", Matchers.is("Request body is empty!")));
+    }
 }
